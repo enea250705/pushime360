@@ -26,80 +26,104 @@ export const holidays2026 = [
 ];
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
-  const { title, start, end, description } = req.query;
-  
-  const now = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-  const domain = 'pushime360.com';
-  
-  let content = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    `PRODID:-//${domain}//AL`,
-    'CALSCALE:GREGORIAN',
-    'METHOD:PUBLISH',
-    'X-WR-CALNAME:Festat Shqiptare 2026',
-    'X-WR-TIMEZONE:Europe/Tirane'
-  ];
+  // Add CORS headers to allow external usage
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
 
-  if (title && start && end) {
-    const startDate = (start as string).replace(/-/g, '');
-    const e = new Date(end as string);
-    e.setDate(e.getDate() + 1);
-    const endDate = e.toISOString().split('T')[0].replace(/-/g, '');
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  try {
+    const { title, start, end, description } = req.query;
     
-    content.push(
-      'BEGIN:VEVENT',
-      `UID:custom-${startDate}-${endDate}@${domain}`,
-      `DTSTAMP:${now}`,
-      `DTSTART;VALUE=DATE:${startDate}`,
-      `DTEND;VALUE=DATE:${endDate}`,
-      `SUMMARY:${title}`,
-    );
-    if (description) {
-      const escapedDesc = (description as string)
-        .replace(/\\/g, '\\\\')
-        .replace(/;/g, '\\;')
-        .replace(/,/g, '\\,')
-        .replace(/\n/g, '\\n');
-      content.push(`DESCRIPTION:${escapedDesc}`);
-    }
-    content.push('TRANSP:TRANSPARENT', 'END:VEVENT');
-  } else {
-    holidays2026.forEach(h => {
-      const startFormat = h.date.replace(/-/g, '');
-      const endDate = new Date(h.date);
-      endDate.setDate(endDate.getDate() + 1);
-      const endFormat = endDate.toISOString().split('T')[0].replace(/-/g, '');
-      const uid = `${h.id}-2026@${domain}`;
+    const now = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    const domain = 'pushime360.com';
+    
+    let content = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      `PRODID:-//${domain}//AL`,
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'X-WR-CALNAME:Festat Shqiptare 2026',
+      'X-WR-TIMEZONE:Europe/Tirane'
+    ];
+
+    if (title && start && end) {
+      const startStr = Array.isArray(start) ? start[0] : start;
+      const endStr = Array.isArray(end) ? end[0] : end;
+      const descStr = Array.isArray(description) ? description[0] : description;
+      const titleStr = Array.isArray(title) ? title[0] : title;
+
+      const startDate = startStr.replace(/-/g, '');
+      const e = new Date(endStr);
+      e.setDate(e.getDate() + 1);
+      const endDate = e.toISOString().split('T')[0].replace(/-/g, '');
       
       content.push(
         'BEGIN:VEVENT',
-        `UID:${uid}`,
+        `UID:custom-${startDate}-${endDate}@${domain}`,
         `DTSTAMP:${now}`,
-        `DTSTART;VALUE=DATE:${startFormat}`,
-        `DTEND;VALUE=DATE:${endFormat}`,
-        `SUMMARY:${h.name}`,
+        `DTSTART;VALUE=DATE:${startDate}`,
+        `DTEND;VALUE=DATE:${endDate}`,
+        `SUMMARY:${titleStr}`,
       );
-
-      if (h.description) {
-        const escapedDesc = h.description
+      if (descStr) {
+        const escapedDesc = descStr
           .replace(/\\/g, '\\\\')
           .replace(/;/g, '\\;')
           .replace(/,/g, '\\,')
           .replace(/\n/g, '\\n');
         content.push(`DESCRIPTION:${escapedDesc}`);
       }
-      
       content.push('TRANSP:TRANSPARENT', 'END:VEVENT');
-    });
+    } else {
+      holidays2026.forEach(h => {
+        const startFormat = h.date.replace(/-/g, '');
+        const endDate = new Date(h.date);
+        endDate.setDate(endDate.getDate() + 1);
+        const endFormat = endDate.toISOString().split('T')[0].replace(/-/g, '');
+        const uid = `${h.id}-2026@${domain}`;
+        
+        content.push(
+          'BEGIN:VEVENT',
+          `UID:${uid}`,
+          `DTSTAMP:${now}`,
+          `DTSTART;VALUE=DATE:${startFormat}`,
+          `DTEND;VALUE=DATE:${endFormat}`,
+          `SUMMARY:${h.name}`,
+        );
+
+        if (h.description) {
+          const escapedDesc = h.description
+            .replace(/\\/g, '\\\\')
+            .replace(/;/g, '\\;')
+            .replace(/,/g, '\\,')
+            .replace(/\n/g, '\\n');
+          content.push(`DESCRIPTION:${escapedDesc}`);
+        }
+        
+        content.push('TRANSP:TRANSPARENT', 'END:VEVENT');
+      });
+    }
+
+    content.push('END:VCALENDAR');
+
+    const icsString = content.join('\r\n');
+
+    res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${title ? 'pushime-te-gjata' : 'festat-shqiptare-2026'}.ics"`);
+    res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate');
+    res.status(200).send(icsString);
+  } catch (error: any) {
+    console.error('Error in iCal endpoint:', error);
+    res.status(500).json({ error: 'Failed to generate iCal file', details: error.message });
   }
-
-  content.push('END:VCALENDAR');
-
-  const icsString = content.join('\r\n');
-
-  res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
-  res.setHeader('Content-Disposition', `attachment; filename="${title ? 'pushime-te-gjata' : 'festat-shqiptare-2026'}.ics"`);
-  res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate');
-  res.status(200).send(icsString);
 }
