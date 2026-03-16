@@ -4,13 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
-import CalendarPage from "./pages/CalendarPage.tsx";
-import HolidaysPage from "./pages/HolidaysPage.tsx";
-import LongWeekendsPage from "./pages/LongWeekendsPage.tsx";
-import SmartPlannerPage from "./pages/SmartPlannerPage.tsx";
-import PersonalPlannerPage from "./pages/PersonalPlannerPage.tsx";
-import KosovoPage from "./pages/KosovoPage.tsx";
-import ApiPage from "./pages/ApiPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -23,13 +16,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/kalendari" element={<CalendarPage />} />
-          <Route path="/festat" element={<HolidaysPage />} />
-          <Route path="/fundjava" element={<LongWeekendsPage />} />
-          <Route path="/sugjerime" element={<SmartPlannerPage />} />
-          <Route path="/plani" element={<PersonalPlannerPage />} />
-          <Route path="/kosova" element={<KosovoPage />} />
-          <Route path="/api" element={<ApiPage />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
