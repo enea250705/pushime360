@@ -162,13 +162,13 @@ const SmartLeavePlanner = () => {
                 </div>
                 
                 <div className="mt-4 flex shrink-0 md:mt-0 md:ml-4">
-                  <a
-                    href={`/api/ical?title=${encodeURIComponent('Pushime të Gjata')}&start=${opt.leaveDays.length > 0 ? opt.leaveDays[0] : '2026-01-01'}&end=${opt.leaveDays.length > 0 ? opt.leaveDays[opt.leaveDays.length - 1] : '2026-01-01'}&description=${encodeURIComponent(`Pushime të gjata duke përdorur festat: ${opt.holidays.join(', ')}`)}`}
-                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
+                  <button
+                    disabled
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors border border-input bg-muted text-muted-foreground shadow-sm h-9 px-4 py-2 cursor-not-allowed"
                   >
                     <Download className="h-4 w-4" />
-                    Shto në iCal
-                  </a>
+                    Shto në iCal (Së shpejti)
+                  </button>
                 </div>
               </div>
 

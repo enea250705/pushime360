@@ -79,7 +79,14 @@ fetch('${baseUrl}/api/kosovo-holidays')
     {
       key: 'ical',
       icon: <BookOpen className="h-5 w-5" />,
-      title: 'iCal Format',
+      title: (
+        <span className="flex items-center gap-2">
+          iCal Format
+          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+            Së shpejti
+          </span>
+        </span>
+      ),
       description: 'Importo festat në Google Calendar, Apple Calendar, etj.',
       code: icalExample,
       lang: 'text',

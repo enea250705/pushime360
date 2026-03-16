@@ -275,13 +275,13 @@ const CalendarView = () => {
 
         {/* Global Export Options */}
         <div className="mx-auto mt-6 flex max-w-4xl flex-col items-center justify-center gap-4 sm:flex-row">
-          <a
-            href="/api/ical"
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md sm:w-auto"
+          <button
+            disabled
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-muted px-6 py-3 text-sm font-semibold text-muted-foreground shadow-sm transition-all sm:w-auto cursor-not-allowed"
           >
             <Download className="h-4 w-4" />
-            Shto në iCal (Të gjitha)
-          </a>
+            Shto në iCal (Së shpejti)
+          </button>
           <a
             href="#api"
             className="flex w-full items-center justify-center gap-2 rounded-xl border border-input bg-background px-6 py-3 text-sm font-semibold text-foreground shadow-sm transition-all hover:bg-accent hover:text-accent-foreground sm:w-auto"
