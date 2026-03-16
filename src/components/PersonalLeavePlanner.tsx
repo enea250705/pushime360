@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Briefcase, Plus, Trash2, Calendar, TrendingUp } from 'lucide-react';
-import { holidays2026, ALBANIAN_MONTHS, ALBANIAN_DAYS, getCategoryColor, formatDateAlbanian } from '@/data/holidays';
+import { useHolidays, ALBANIAN_MONTHS, ALBANIAN_DAYS, getCategoryColor, formatDateAlbanian } from '@/data/holidays';
 
-const STORAGE_KEY = 'kalendarifestave-leave-days';
-const QUOTA_KEY = 'kalendarifestave-leave-quota';
+const STORAGE_KEY = 'pushime360-leave-days';
+const QUOTA_KEY = 'pushime360-leave-quota';
 
 const PersonalLeavePlanner = () => {
   const [leaveDays, setLeaveDays] = useState<string[]>(() => {
@@ -19,6 +19,8 @@ const PersonalLeavePlanner = () => {
   });
   const [selectedMonth, setSelectedMonth] = useState(0);
 
+  const { data: holidays = [] } = useHolidays();
+
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(leaveDays));
   }, [leaveDays]);
@@ -28,7 +30,7 @@ const PersonalLeavePlanner = () => {
   }, [annualQuota]);
 
   const year = 2026;
-  const holidayDates = new Set(holidays2026.map(h => h.date));
+  const holidayDates = new Set(holidays.map(h => h.date));
 
   const toggleLeaveDay = (dateStr: string) => {
     setLeaveDays(prev =>

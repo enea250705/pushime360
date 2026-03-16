@@ -13,7 +13,7 @@ const navLinks = [
 ];
 
 const Header = () => {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const toggleDark = () => {
@@ -24,12 +24,24 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-lg">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
-        <a href="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <span className="font-display text-lg font-bold text-primary-foreground">🇦🇱</span>
-          </div>
-          <span className="hidden font-display text-lg font-bold text-foreground sm:inline">
-            Kalendari<span className="text-primary">Festave</span>
+        <a href="/" className="flex items-center gap-2.5">
+          {/* Calendar SVG Logo */}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="36" height="36" fill="none" className="flex-shrink-0">
+            <rect x="2" y="5" width="28" height="25" rx="4" fill="#6366f1"/>
+            <rect x="2" y="5" width="28" height="9" rx="4" fill="#4f46e5"/>
+            <rect x="2" y="10" width="28" height="4" fill="#4f46e5"/>
+            <rect x="10" y="2" width="3" height="7" rx="1.5" fill="#c7d2fe"/>
+            <rect x="19" y="2" width="3" height="7" rx="1.5" fill="#c7d2fe"/>
+            <rect x="7"  y="19" width="3" height="3" rx="1" fill="white" opacity="0.9"/>
+            <rect x="14" y="19" width="3" height="3" rx="1" fill="white" opacity="0.9"/>
+            <rect x="21" y="19" width="3" height="3" rx="1" fill="white" opacity="0.9"/>
+            <rect x="7"  y="25" width="3" height="3" rx="1" fill="white" opacity="0.6"/>
+            <rect x="14" y="25" width="3" height="3" rx="1" fill="#fbbf24"/>
+            <rect x="21" y="25" width="3" height="3" rx="1" fill="white" opacity="0.6"/>
+          </svg>
+          <span className="hidden font-display text-base font-bold text-foreground sm:inline">
+            Pushime<span className="text-primary">360</span>
+            <span className="ml-1 text-xs font-normal text-muted-foreground">— Kalendari i Festave</span>
           </span>
         </a>
 

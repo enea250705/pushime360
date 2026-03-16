@@ -1,11 +1,23 @@
 import { motion } from 'framer-motion';
 import { Calendar, ArrowDown } from 'lucide-react';
-import { getNextHoliday, getDaysUntil, formatDateAlbanian, holidays2026 } from '@/data/holidays';
+import { getNextHoliday, getDaysUntil, formatDateAlbanian, useHolidays } from '@/data/holidays';
 
 const HeroSection = () => {
-  const nextHoliday = getNextHoliday();
+  const { data: holidays = [], isLoading } = useHolidays();
+  const nextHoliday = getNextHoliday(holidays);
   const daysUntil = nextHoliday ? getDaysUntil(nextHoliday.date) : 0;
-  const totalHolidays = holidays2026.filter(h => !h.isShifted).length;
+  
+  // Calculate remaining holidays from today
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const remainingHolidays = holidays.filter(h => {
+    const holidayDate = new Date(h.date);
+    holidayDate.setHours(0, 0, 0, 0);
+    return !h.isShifted && holidayDate >= today;
+  }).length;
+  
+  const totalHolidays = holidays.filter(h => !h.isShifted).length;
 
   return (
     <section className="relative overflow-hidden bg-secondary py-20 md:py-32">
@@ -33,7 +45,7 @@ const HeroSection = () => {
           </h1>
 
           <p className="mb-10 text-lg text-secondary-foreground/70 md:text-xl">
-            {totalHolidays} festa zyrtare · Fundjavat e gjata · Planifikimi i pushimeve
+            Edhe <strong>{remainingHolidays}</strong> festa zyrtare të mbetura këtë vit · {totalHolidays} gjithsej
           </p>
 
           {nextHoliday && (

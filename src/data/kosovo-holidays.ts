@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import type { Holiday, HolidayCategory } from './holidays';
 
 export interface KosovoHoliday {
@@ -8,43 +9,75 @@ export interface KosovoHoliday {
   category: HolidayCategory;
   description: string;
   sharedWithAlbania: boolean;
+  isObservance?: boolean; // true = ditë kujtuese, jo pushim me pagesë
 }
 
 export const kosovoHolidays2026: KosovoHoliday[] = [
+  // ── Janar ──────────────────────────────────────────────────────────────
   {
     id: 'ks-viti-ri',
     date: '2026-01-01',
     name: 'Viti i Ri',
     nameEn: "New Year's Day",
     category: 'national',
-    description: 'Festimi i Vitit të Ri.',
+    description: 'Festimi i Vitit të Ri — ditë zyrtare pushimi sipas Ligjit 03/L-064.',
     sharedWithAlbania: true,
   },
   {
     id: 'ks-viti-ri-2',
     date: '2026-01-02',
-    name: 'Dita e dytë e Vitit të Ri',
-    nameEn: 'Day after New Year',
+    name: 'Dita e Dytë e Vitit të Ri',
+    nameEn: '2nd Day of New Year',
     category: 'national',
-    description: 'Dita e dytë e pushimit për Vitin e Ri.',
+    description: 'Dita e dytë e pushimit zyrtar për Vitin e Ri.',
     sharedWithAlbania: true,
   },
   {
-    id: 'ks-dita-lirise',
-    date: '2026-01-09',
-    name: 'Dita e Lirisë së Fjalës',
-    nameEn: 'Day of Freedom of Press',
-    category: 'national',
-    description: 'Përkujtimi i lirisë së medias në Kosovë.',
+    id: 'ks-krishtlindjet-ortodokse',
+    date: '2026-01-07',
+    name: 'Krishtlindjet Ortodokse',
+    nameEn: 'Orthodox Christmas Day',
+    category: 'religious',
+    description: 'Krishtlindjet sipas kalendarit julian ortodoks — ditë zyrtare pushimi.',
     sharedWithAlbania: false,
   },
+  // ── Shkurt ─────────────────────────────────────────────────────────────
   {
     id: 'ks-pavaresise',
     date: '2026-02-17',
-    name: 'Dita e Pavarësisë së Kosovës',
+    name: 'Dita e Pavarësisë',
     nameEn: 'Kosovo Independence Day',
     category: 'national',
-    description: 'Shpallja e Pavarësisë së Republikës së Kosovës (17 shkurt 2008).',
+    description: 'Shpallja e Pavarësisë së Republikës së Kosovës — 17 shkurt 2008.',
+    sharedWithAlbania: false,
+  },
+  // ── Mars ───────────────────────────────────────────────────────────────
+  {
+    id: 'ks-fiter-bajrami',
+    date: '2026-03-20',
+    name: 'Fitër Bajrami',
+    nameEn: 'Eid al-Fitr',
+    category: 'religious',
+    description: 'Dita e parë e Bajramit — fundi i muajit të shenjtë të Ramazanit. Data tentative sipas kalendarit hënor.',
+    sharedWithAlbania: true,
+  },
+  // ── Prill ──────────────────────────────────────────────────────────────
+  {
+    id: 'ks-pashka-katolike',
+    date: '2026-04-05',
+    name: 'Pashkët Katolike',
+    nameEn: 'Catholic Easter',
+    category: 'religious',
+    description: 'Pashka sipas kalendarit gregorian katolik.',
+    sharedWithAlbania: true,
+  },
+  {
+    id: 'ks-pashka-katolike-e-hene',
+    date: '2026-04-06',
+    name: 'E Hëna e Pashkëve Katolike',
+    nameEn: 'Catholic Easter Monday',
+    category: 'religious',
+    description: 'Dita e dytë e festës së Pashkëve Katolike — ditë zyrtare pushimi.',
     sharedWithAlbania: false,
   },
   {
@@ -53,35 +86,8 @@ export const kosovoHolidays2026: KosovoHoliday[] = [
     name: 'Dita e Kushtetutës',
     nameEn: 'Constitution Day',
     category: 'national',
-    description: 'Dita kur hyri në fuqi Kushtetuta e Republikës së Kosovës.',
+    description: 'Dita kur hyri në fuqi Kushtetuta e Republikës së Kosovës — 9 prill 2008.',
     sharedWithAlbania: false,
-  },
-  {
-    id: 'ks-dita-veres',
-    date: '2026-03-14',
-    name: 'Dita e Verës',
-    nameEn: 'Summer Day',
-    category: 'cultural',
-    description: 'Festa e ardhjes së pranverës.',
-    sharedWithAlbania: true,
-  },
-  {
-    id: 'ks-bajrami-vogel',
-    date: '2026-03-20',
-    name: 'Bajrami i Vogël (Fitër Bajram)',
-    nameEn: 'Eid al-Fitr',
-    category: 'religious',
-    description: 'Fundi i muajit të Ramazanit.',
-    sharedWithAlbania: true,
-  },
-  {
-    id: 'ks-pashka-katolike',
-    date: '2026-04-05',
-    name: 'Pashkët Katolike',
-    nameEn: 'Catholic Easter',
-    category: 'religious',
-    description: 'Pashka sipas kalendarit katolik.',
-    sharedWithAlbania: true,
   },
   {
     id: 'ks-pashka-ortodokse',
@@ -89,58 +95,89 @@ export const kosovoHolidays2026: KosovoHoliday[] = [
     name: 'Pashkët Ortodokse',
     nameEn: 'Orthodox Easter',
     category: 'religious',
-    description: 'Pashka sipas kalendarit ortodoks.',
+    description: 'Pashka sipas kalendarit julian ortodoks.',
     sharedWithAlbania: true,
   },
+  {
+    id: 'ks-pashka-ortodokse-e-hene',
+    date: '2026-04-13',
+    name: 'E Hëna e Pashkëve Ortodokse',
+    nameEn: 'Orthodox Easter Monday',
+    category: 'religious',
+    description: 'Dita e dytë e festës së Pashkëve Ortodokse — ditë zyrtare pushimi.',
+    sharedWithAlbania: false,
+  },
+  // ── Maj ────────────────────────────────────────────────────────────────
   {
     id: 'ks-dita-punetoreve',
     date: '2026-05-01',
     name: 'Dita e Punëtorëve',
-    nameEn: 'Labour Day',
+    nameEn: "International Labour Day",
     category: 'national',
-    description: 'Dita Ndërkombëtare e Punëtorëve.',
+    description: 'Dita Ndërkombëtare e Punëtorëve — 1 maj.',
     sharedWithAlbania: true,
   },
   {
-    id: 'ks-dita-europes',
-    date: '2026-05-09',
-    name: 'Dita e Evropës',
-    nameEn: 'Europe Day',
+    id: 'ks-dita-europes-transfer',
+    date: '2026-05-11',
+    name: 'Dita e Evropës (pushim)',
+    nameEn: 'Europe Day (day off transferred)',
     category: 'national',
-    description: 'Festa e Bashkimit Evropian, festohet në Kosovë si ditë zyrtare.',
+    description: 'Dita e Evropës (9 maj) bie të shtunë në 2026 — pushimi transferohet të hënë 11 maj sipas Ligjit 03/L-064.',
     sharedWithAlbania: false,
   },
   {
     id: 'ks-kurban-bajram',
     date: '2026-05-27',
-    name: 'Kurban Bajram',
+    name: 'Kurban Bajrami',
     nameEn: 'Eid al-Adha',
     category: 'religious',
-    description: 'Festa e Kurban Bajramit.',
+    description: 'Dita e parë e Kurban Bajramit — flijimi sipas kalendarit hënor islamik. Data tentative.',
     sharedWithAlbania: true,
   },
+  // ── Dhjetor ────────────────────────────────────────────────────────────
   {
     id: 'ks-krishtlindjet',
     date: '2026-12-25',
-    name: 'Krishtlindjet',
-    nameEn: 'Christmas',
+    name: 'Krishtlindjet Katolike',
+    nameEn: 'Catholic Christmas Day',
     category: 'religious',
-    description: 'Festa e Krishtlindjeve.',
+    description: 'Festa e Krishtlindjeve Katolike — 25 dhjetor.',
     sharedWithAlbania: true,
   },
+  // ── Nëntor (Observance) ────────────────────────────────────────────────
   {
-    id: 'ks-dita-flamurit',
+    id: 'ks-dita-shqiptareve',
     date: '2026-11-28',
-    name: 'Dita e Flamurit',
-    nameEn: 'Flag Day',
+    name: 'Dita e Shqiptarëve',
+    nameEn: 'Day of Albanians',
     category: 'national',
-    description: 'Përkujtimi i Ditës së Flamurit Shqiptar.',
+    description: 'Kujtimi i Ditës së Flamurit Shqiptar — festohet nga komuniteti shqiptar në Kosovë si ditë simbolike, por NUK është ditë zyrtare pushimi me pagesë sipas Ligjit 03/L-064.',
     sharedWithAlbania: true,
+    isObservance: true,
   },
 ];
 
-export function getSharedHolidays(): { albania: string; kosovo: string; date: string }[] {
-  return kosovoHolidays2026
+export function useKosovoHolidays() {
+  return useQuery({
+    queryKey: ['kosovo-holidays'],
+    queryFn: async (): Promise<KosovoHoliday[]> => {
+      try {
+        const res = await fetch('/api/kosovo-holidays');
+        if (!res.ok) throw new Error('Kosovo API failed');
+        return res.json();
+      } catch (err) {
+        console.error('Failed to fetch Kosovo holidays from API', err);
+        return kosovoHolidays2026;
+      }
+    },
+    initialData: kosovoHolidays2026,
+    staleTime: 1000 * 60 * 60 * 24,
+  });
+}
+
+export function getSharedHolidays(data: KosovoHoliday[] = kosovoHolidays2026): { albania: string; kosovo: string; date: string }[] {
+  return data
     .filter(kh => kh.sharedWithAlbania)
     .map(kh => ({
       albania: kh.name,
@@ -149,6 +186,6 @@ export function getSharedHolidays(): { albania: string; kosovo: string; date: st
     }));
 }
 
-export function getKosovoOnlyHolidays(): KosovoHoliday[] {
-  return kosovoHolidays2026.filter(kh => !kh.sharedWithAlbania);
+export function getKosovoOnlyHolidays(data: KosovoHoliday[] = kosovoHolidays2026): KosovoHoliday[] {
+  return data.filter(kh => !kh.sharedWithAlbania);
 }

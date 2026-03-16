@@ -1,44 +1,57 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Code2, Copy, Check, BookOpen, Globe } from 'lucide-react';
-import { holidays2026 } from '@/data/holidays';
+import { useHolidays } from '@/data/holidays';
 
 const WidgetEmbed = () => {
   const [copied, setCopied] = useState<string | null>(null);
+  const { data: holidays = [] } = useHolidays();
+  
+  // Use the production URL in examples when running locally so devs understand how to call it
+  const baseUrl = typeof window !== 'undefined' && window.location.hostname.includes('localhost') 
+    ? 'https://pushime360.com' 
+    : window.location.origin;
 
   const embedCode = `<iframe
-  src="${window.location.origin}/?embed=true"
+  src="${baseUrl}/?embed=true"
   width="100%"
   height="500"
   frameborder="0"
   style="border-radius: 12px; border: 1px solid #e5e7eb;"
 ></iframe>`;
 
-  const apiExample = `// Festat zyrtare 2026 — JSON
-fetch('${window.location.origin}/api/holidays/2026')
-  .then(r => r.json())
+  const apiExample = `// Festat zyrtare 2026 — API Live
+fetch('${baseUrl}/api/holidays')
+  .then(res => res.json())
   .then(data => console.log(data));
 
-// Response:
-${JSON.stringify(holidays2026.slice(0, 2).map(h => ({
-  date: h.date,
-  name: h.name,
-  nameEn: h.nameEn,
-  category: h.category,
-})), null, 2)}
-// ... (${holidays2026.length} holidays total)`;
+// Ose thirrje për Festat e Kosovës:
+fetch('${baseUrl}/api/kosovo-holidays')
+  .then(res => res.json())
+  .then(data => console.log(data));
 
-  const icalExample = `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//KalendariFestave//AL//SQ
-X-WR-CALNAME:Festat Zyrtare Shqiptare 2026
-${holidays2026.slice(0, 2).map(h => `BEGIN:VEVENT
-DTSTART;VALUE=DATE:${h.date.replace(/-/g, '')}
-SUMMARY:${h.name}
-DESCRIPTION:${h.description}
-END:VEVENT`).join('\n')}
-...
-END:VCALENDAR`;
+// Shembull i përgjigjes nga API (REST Payload):
+[
+  {
+    "id": "viti-ri",
+    "date": "2026-01-01",
+    "name": "Viti i Ri",
+    "nameEn": "New Year's Day",
+    "category": "national",
+    "description": "Festimi i Vitit të Ri..."
+  },
+  // ... (${holidays.length} festa në total)
+]`;
+
+  const icalExample = `// Shto në iCal direkt nga aplikacioni juaj HTML
+<a href="${baseUrl}/api/ical">
+  Shto në Kalendarin Tim (iCal)
+</a>
+
+// Ose gjeneroni iCal vetëm për pushime të caktuara:
+<a href="${baseUrl}/api/ical?title=Pushim&start=2026-03-14&end=2026-03-16">
+  Shto Pushimin (14-16 Mars)
+</a>`;
 
   const copyToClipboard = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
@@ -58,8 +71,8 @@ END:VCALENDAR`;
     {
       key: 'api',
       icon: <Globe className="h-5 w-5" />,
-      title: 'API JSON',
-      description: 'Merr festat në format JSON për zhvilluesit.',
+      title: 'Live API Endpoints',
+      description: 'Merr festat direkt nga endpoint-i ynë live për t\'i përdorur në aplikacionet tuaja.',
       code: apiExample,
       lang: 'javascript',
     },

@@ -1,21 +1,23 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Globe, Check, X as XIcon } from 'lucide-react';
-import { holidays2026, formatDateAlbanian, getCategoryColor, getCategoryLabel } from '@/data/holidays';
-import { kosovoHolidays2026, getKosovoOnlyHolidays } from '@/data/kosovo-holidays';
+import { useHolidays, formatDateAlbanian, getCategoryColor, getCategoryLabel } from '@/data/holidays';
+import { useKosovoHolidays, getKosovoOnlyHolidays } from '@/data/kosovo-holidays';
 import type { HolidayCategory } from '@/data/holidays';
 
 type CompareView = 'shared' | 'albania-only' | 'kosovo-only';
 
 const KosovoComparison = () => {
   const [view, setView] = useState<CompareView>('shared');
+  const { data: holidays = [] } = useHolidays();
+  const { data: kosovoHolidays = [] } = useKosovoHolidays();
 
-  const kosovoDates = new Set(kosovoHolidays2026.map(h => h.date));
-  const albaniaDates = new Set(holidays2026.map(h => h.date));
+  const kosovoDates = new Set(kosovoHolidays.map(h => h.date));
+  const albaniaDates = new Set(holidays.map(h => h.date));
 
-  const shared = holidays2026.filter(h => kosovoDates.has(h.date));
-  const albaniaOnly = holidays2026.filter(h => !kosovoDates.has(h.date));
-  const kosovoOnly = getKosovoOnlyHolidays();
+  const shared = holidays.filter(h => kosovoDates.has(h.date));
+  const albaniaOnly = holidays.filter(h => !kosovoDates.has(h.date));
+  const kosovoOnly = getKosovoOnlyHolidays(kosovoHolidays);
 
   const tabs: { key: CompareView; label: string; count: number }[] = [
     { key: 'shared', label: 'Të përbashkëta', count: shared.length },

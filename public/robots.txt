@@ -1,14 +1,8 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+Allow: /api/holidays
+Allow: /api/ical
+Allow: /api/kosovo-holidays
+Disallow: /api/ical?*
+
+Sitemap: https://pushime360.com/sitemap.xml

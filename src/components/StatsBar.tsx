@@ -1,12 +1,14 @@
-import { getCategoryColor, getCategoryLabel, holidays2026 } from '@/data/holidays';
-import type { HolidayCategory } from '@/data/holidays';
+import { useHolidays, getCategoryColor, getCategoryLabel } from '@/data/holidays';
+import type { HolidayCategory, Holiday } from '@/data/holidays';
 
 const StatsBar = () => {
+  const { data: holidays = [] } = useHolidays();
+
   const categoryCounts: Record<HolidayCategory, number> = {
-    national: holidays2026.filter(h => h.category === 'national').length,
-    religious: holidays2026.filter(h => h.category === 'religious').length,
-    cultural: holidays2026.filter(h => h.category === 'cultural').length,
-    shifted: holidays2026.filter(h => h.category === 'shifted').length,
+    national: holidays.filter((h: Holiday) => h.category === 'national').length,
+    religious: holidays.filter((h: Holiday) => h.category === 'religious').length,
+    cultural: holidays.filter((h: Holiday) => h.category === 'cultural').length,
+    shifted: holidays.filter((h: Holiday) => h.category === 'shifted').length,
   };
 
   return (
@@ -25,7 +27,7 @@ const StatsBar = () => {
           <div className="flex items-center gap-2.5">
             <div className="h-3 w-3 rounded-full bg-foreground" />
             <div>
-              <p className="font-display text-xl font-bold text-foreground">{holidays2026.length}</p>
+              <p className="font-display text-xl font-bold text-foreground">{holidays.length}</p>
               <p className="text-xs text-muted-foreground">Gjithsej</p>
             </div>
           </div>

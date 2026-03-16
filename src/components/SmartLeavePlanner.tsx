@@ -1,7 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Lightbulb, Calendar, ArrowRight, Sparkles } from 'lucide-react';
-import { holidays2026, ALBANIAN_MONTHS, formatDateAlbanian } from '@/data/holidays';
+import { Lightbulb, Calendar, ArrowRight, Sparkles, Download } from 'lucide-react';
+import { useHolidays, ALBANIAN_MONTHS, formatDateAlbanian, Holiday } from '@/data/holidays';
 
 interface LeaveOptimization {
   leaveDays: string[];
@@ -11,13 +11,13 @@ interface LeaveOptimization {
   holidays: string[];
 }
 
-function generateOptimizations(maxLeaveDays: number): LeaveOptimization[] {
+function generateOptimizations(holidaysData: Holiday[]): LeaveOptimization[] {
   const year = 2026;
-  const holidayDates = new Set(holidays2026.map(h => h.date));
+  const holidayDates = new Set(holidaysData.map(h => h.date));
   const results: LeaveOptimization[] = [];
 
   // For each holiday cluster, find optimal surrounding leave days
-  const sortedHolidays = [...holidays2026].sort((a, b) =>
+  const sortedHolidays = [...holidaysData].sort((a, b) =>
     new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
@@ -31,7 +31,7 @@ function generateOptimizations(maxLeaveDays: number): LeaveOptimization[] {
     } else {
       const lastDate = new Date(current[current.length - 1].date);
       const thisDate = new Date(h.date);
-      if ((thisDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24) <= 5) {
+      if ((thisDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24) <= 7) {
         current.push(h);
       } else {
         groups.push([...current]);
@@ -42,8 +42,8 @@ function generateOptimizations(maxLeaveDays: number): LeaveOptimization[] {
   if (current.length > 0) groups.push(current);
 
   for (const group of groups) {
-    const firstHoliday = new Date(group[0].date);
-    const lastHoliday = new Date(group[group.length - 1].date);
+    const firstHoliday = new Date(group[0].date + 'T00:00:00');
+    const lastHoliday = new Date(group[group.length - 1].date + 'T00:00:00');
 
     // Try extending backward and forward
     for (let backDays = 0; backDays <= 5; backDays++) {
@@ -71,7 +71,7 @@ function generateOptimizations(maxLeaveDays: number): LeaveOptimization[] {
         let totalOff = 0;
 
         while (check <= end) {
-          const ds = check.toISOString().split('T')[0];
+          const ds = check.getFullYear() + '-' + String(check.getMonth() + 1).padStart(2, '0') + '-' + String(check.getDate()).padStart(2, '0');
           const isWe = check.getDay() === 0 || check.getDay() === 6;
           const isHol = holidayDates.has(ds);
 
@@ -84,14 +84,14 @@ function generateOptimizations(maxLeaveDays: number): LeaveOptimization[] {
           check.setDate(check.getDate() + 1);
         }
 
-        if (leaveDays.length > 0 && leaveDays.length <= maxLeaveDays && totalOff >= 4) {
+        if (leaveDays.length > 0 && totalOff >= 4) {
           const ratio = totalOff / leaveDays.length;
           if (ratio >= 2) {
             results.push({
               leaveDays,
               totalOff,
               ratio,
-              period: `${formatDateAlbanian(start.toISOString().split('T')[0])} — ${formatDateAlbanian(end.toISOString().split('T')[0])}`,
+              period: `${formatDateAlbanian(start.getFullYear() + '-' + String(start.getMonth() + 1).padStart(2, '0') + '-' + String(start.getDate()).padStart(2, '0'))} — ${formatDateAlbanian(end.getFullYear() + '-' + String(end.getMonth() + 1).padStart(2, '0') + '-' + String(end.getDate()).padStart(2, '0'))}`,
               holidays: group.map(h => h.name),
             });
           }
@@ -101,21 +101,22 @@ function generateOptimizations(maxLeaveDays: number): LeaveOptimization[] {
   }
 
   // Deduplicate and sort by ratio
-  const seen = new Set<string>();
-  return results
-    .filter(r => {
-      const key = r.leaveDays.join(',');
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    })
-    .sort((a, b) => b.ratio - a.ratio)
-    .slice(0, 8);
+  const bestByLeaveDays = new Map<string, LeaveOptimization>();
+  for (const r of results) {
+    const key = r.leaveDays.join(',');
+    const existing = bestByLeaveDays.get(key);
+    if (!existing || r.totalOff > existing.totalOff) {
+      bestByLeaveDays.set(key, r);
+    }
+  }
+  
+  return Array.from(bestByLeaveDays.values())
+    .sort((a, b) => b.ratio - a.ratio);
 }
 
 const SmartLeavePlanner = () => {
-  const [maxDays, setMaxDays] = useState(3);
-  const optimizations = useMemo(() => generateOptimizations(maxDays), [maxDays]);
+  const { data: holidays = [] } = useHolidays();
+  const optimizations = useMemo(() => generateOptimizations(holidays), [holidays]);
 
   return (
     <section id="smart-planner" className="bg-secondary/50 py-16 md:py-24">
@@ -131,24 +132,6 @@ const SmartLeavePlanner = () => {
           <p className="mx-auto max-w-lg text-muted-foreground">
             Merr sa më shumë ditë të lira me sa më pak ditë leje. Algoritmi analizon festat dhe fundjavat për të gjetur kombinimin optimal.
           </p>
-        </div>
-
-        {/* Max days slider */}
-        <div className="mx-auto mb-8 flex max-w-md items-center justify-center gap-4">
-          <label className="text-sm font-medium text-foreground">Ditë leje max:</label>
-          <div className="flex items-center gap-2">
-            {[1, 2, 3, 4, 5].map(n => (
-              <button
-                key={n}
-                onClick={() => setMaxDays(n)}
-                className={`h-9 w-9 rounded-lg text-sm font-bold transition-all
-                  ${maxDays === n ? 'bg-primary text-primary-foreground shadow-md' : 'bg-card text-muted-foreground hover:bg-muted'}
-                `}
-              >
-                {n}
-              </button>
-            ))}
-          </div>
         </div>
 
         <div className="mx-auto grid max-w-4xl gap-4">
@@ -177,6 +160,16 @@ const SmartLeavePlanner = () => {
                     {opt.period}
                   </p>
                 </div>
+                
+                <div className="mt-4 flex shrink-0 md:mt-0 md:ml-4">
+                  <a
+                    href={`/api/ical?title=${encodeURIComponent('Pushime të Gjata')}&start=${opt.leaveDays.length > 0 ? opt.leaveDays[0] : '2026-01-01'}&end=${opt.leaveDays.length > 0 ? opt.leaveDays[opt.leaveDays.length - 1] : '2026-01-01'}&description=${encodeURIComponent(`Pushime të gjata duke përdorur festat: ${opt.holidays.join(', ')}`)}`}
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
+                  >
+                    <Download className="h-4 w-4" />
+                    Shto në iCal
+                  </a>
+                </div>
               </div>
 
               <div className="mt-3 flex flex-wrap gap-1.5 border-t border-border pt-3">
@@ -197,7 +190,7 @@ const SmartLeavePlanner = () => {
 
           {optimizations.length === 0 && (
             <div className="rounded-2xl border border-border bg-card p-10 text-center">
-              <p className="text-muted-foreground">Nuk u gjetën sugjerime me {maxDays} ditë leje.</p>
+              <p className="text-muted-foreground">Nuk u gjetën sugjerime me këto kritere.</p>
             </div>
           )}
         </div>

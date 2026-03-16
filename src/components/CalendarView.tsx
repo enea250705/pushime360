@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, LayoutGrid, List } from 'lucide-react';
-import { ALBANIAN_MONTHS, ALBANIAN_DAYS, holidays2026, getCategoryColor } from '@/data/holidays';
+import { ChevronLeft, ChevronRight, LayoutGrid, List, Download, Code } from 'lucide-react';
+import { ALBANIAN_MONTHS, ALBANIAN_DAYS, useHolidays, getCategoryColor } from '@/data/holidays';
 import HolidayModal from './HolidayModal';
 import type { Holiday } from '@/data/holidays';
 
@@ -13,6 +13,8 @@ const CalendarView = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [selectedHoliday, setSelectedHoliday] = useState<Holiday | null>(null);
 
+  const { data: holidays = [] } = useHolidays();
+
   const year = 2026;
 
   // Month view logic
@@ -21,13 +23,13 @@ const CalendarView = () => {
   const startDayOfWeek = (firstDay.getDay() + 6) % 7;
   const daysInMonth = lastDay.getDate();
 
-  const monthHolidays = holidays2026.filter(h => {
+  const monthHolidays = holidays.filter(h => {
     const d = new Date(h.date);
     return d.getMonth() === currentMonth && d.getFullYear() === year;
   });
 
   const getHolidaysForDate = (dateStr: string): Holiday[] => {
-    return holidays2026.filter(h => h.date === dateStr);
+    return holidays.filter(h => h.date === dateStr);
   };
 
   const isWeekend = (date: Date): boolean => {
@@ -243,6 +245,7 @@ const CalendarView = () => {
           )}
 
           {/* Week view holiday details */}
+          {/* Week view holiday details */}
           {viewMode === 'week' && (
             <div className="mt-4 space-y-2">
               {weekDates.map(date => {
@@ -268,6 +271,24 @@ const CalendarView = () => {
               })}
             </div>
           )}
+        </div>
+
+        {/* Global Export Options */}
+        <div className="mx-auto mt-6 flex max-w-4xl flex-col items-center justify-center gap-4 sm:flex-row">
+          <a
+            href="/api/ical"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md sm:w-auto"
+          >
+            <Download className="h-4 w-4" />
+            Shto në iCal (Të gjitha)
+          </a>
+          <a
+            href="#api"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-input bg-background px-6 py-3 text-sm font-semibold text-foreground shadow-sm transition-all hover:bg-accent hover:text-accent-foreground sm:w-auto"
+          >
+            <Code className="h-4 w-4 text-muted-foreground" />
+            Për Zhvilluesit (Widget / API)
+          </a>
         </div>
       </div>
 

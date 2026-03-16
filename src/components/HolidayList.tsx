@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { holidays2026, getCategoryLabel, getCategoryColor, getCategoryTextColor, formatDateAlbanian } from '@/data/holidays';
+import { useHolidays, getCategoryLabel, getCategoryColor, getCategoryTextColor, formatDateAlbanian } from '@/data/holidays';
 import HolidayModal from './HolidayModal';
 import type { Holiday, HolidayCategory } from '@/data/holidays';
 
@@ -15,10 +15,11 @@ const categories: { key: HolidayCategory | 'all'; label: string }[] = [
 const HolidayList = () => {
   const [filter, setFilter] = useState<HolidayCategory | 'all'>('all');
   const [selectedHoliday, setSelectedHoliday] = useState<Holiday | null>(null);
+  const { data: holidays = [] } = useHolidays();
 
   const filtered = filter === 'all' 
-    ? holidays2026 
-    : holidays2026.filter(h => h.category === filter);
+    ? holidays 
+    : holidays.filter(h => h.category === filter);
 
   return (
     <section id="holidays" className="bg-muted/50 py-16 md:py-24">

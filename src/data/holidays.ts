@@ -1,3 +1,5 @@
+import { useQuery } from '@tanstack/react-query';
+
 export type HolidayCategory = 'national' | 'religious' | 'shifted' | 'cultural';
 
 export interface Holiday {
@@ -236,17 +238,37 @@ export const holidays2026: Holiday[] = [
   },
 ];
 
-export function getHolidaysByMonth(month: number): Holiday[] {
-  return holidays2026.filter(h => {
+// Fetch hook for live API
+export function useHolidays() {
+  return useQuery({
+    queryKey: ['holidays'],
+    queryFn: async (): Promise<Holiday[]> => {
+      // If we are in development and the api endpoint doesn't exist yet, we catch it
+      try {
+        const res = await fetch('/api/holidays');
+        if (!res.ok) throw new Error('API failed to respond');
+        return res.json();
+      } catch (err) {
+        console.error('Failed to fetch holidays from API, using fallback data', err);
+        return holidays2026;
+      }
+    },
+    initialData: holidays2026, // Provide immediate fallback so the site never shows a blank spinner
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+  });
+}
+
+export function getHolidaysByMonth(month: number, data: Holiday[] = holidays2026): Holiday[] {
+  return data.filter(h => {
     const d = new Date(h.date);
     return d.getMonth() === month;
   });
 }
 
-export function getNextHoliday(): Holiday | undefined {
+export function getNextHoliday(data: Holiday[] = holidays2026): Holiday | undefined {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  return holidays2026.find(h => new Date(h.date) >= today);
+  return data.find(h => new Date(h.date) >= today);
 }
 
 export function getDaysUntil(dateStr: string): number {
@@ -284,11 +306,11 @@ export function getCategoryTextColor(cat: HolidayCategory): string {
   }
 }
 
-export function calculateLongWeekends(): LongWeekend[] {
+export function calculateLongWeekends(data: Holiday[] = holidays2026): LongWeekend[] {
   const longWeekends: LongWeekend[] = [];
   
   // Group holidays that are close together (within 5 days)
-  const sortedHolidays = [...holidays2026].sort((a, b) => 
+  const sortedHolidays = [...data].sort((a, b) => 
     new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 

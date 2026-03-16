@@ -11,10 +11,10 @@ interface HolidayModalProps {
 const HolidayModal = ({ holiday, onClose }: HolidayModalProps) => {
   const shareHoliday = () => {
     if (!holiday) return;
-    const text = `🇦🇱 ${holiday.name} — ${formatDateAlbanian(holiday.date)}\n${holiday.description}\n\nkalendarifestave.com`;
+    const text = `🇦🇱 ${holiday.name} — ${formatDateAlbanian(holiday.date)}\n${holiday.description}\n\npushime360.com`;
 
     if (navigator.share) {
-      navigator.share({ title: holiday.name, text, url: 'https://kalendarifestave.com' });
+      navigator.share({ title: holiday.name, text, url: 'https://pushime360.com' });
     } else {
       const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
       window.open(whatsappUrl, '_blank');
