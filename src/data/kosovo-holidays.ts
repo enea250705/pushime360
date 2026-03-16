@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { kosovoHolidays2026 } from './kosovo-holidays-data';
-export type { KosovoHoliday } from './kosovo-holidays-data';
+import { kosovoHolidays2026 } from '../../api/_data/kosovo-holidays-data';
+export type { KosovoHoliday } from '../../api/_data/kosovo-holidays-data';
 export { kosovoHolidays2026 };
 
 export function useKosovoHolidays() {

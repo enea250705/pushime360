@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { holidays2026 } from './holidays-data';
-export type { Holiday, HolidayCategory, LongWeekend } from './holidays-data';
+import { holidays2026 } from '../../api/_data/holidays-data';
+export type { Holiday, HolidayCategory, LongWeekend } from '../../api/_data/holidays-data';
 export { holidays2026 };
 
 export const ALBANIAN_MONTHS = [

@@ -12,6 +12,15 @@ export interface Holiday {
   note?: string;
 }
 
+export interface LongWeekend {
+  startDate: string;
+  endDate: string;
+  totalDays: number;
+  holidays: Holiday[];
+  leaveDaysNeeded: number;
+  description: string;
+}
+
 export const holidays2026: Holiday[] = [
   {
     id: 'viti-ri',
