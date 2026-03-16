@@ -27,7 +27,6 @@ export const holidays2026 = [
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   // Add CORS headers to allow external usage
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
