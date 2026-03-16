@@ -1,4 +1,4 @@
-import type { HolidayCategory } from './holidays-data';
+import type { HolidayCategory } from './holidays-data.js';
 
 export interface KosovoHoliday {
   id: string;

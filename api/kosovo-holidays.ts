@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { kosovoHolidays2026 } from './_data/kosovo-holidays-data';
+import { kosovoHolidays2026 } from './_data/kosovo-holidays-data.js';
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   // Add CORS headers to allow external usage

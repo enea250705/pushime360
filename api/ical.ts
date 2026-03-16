@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { holidays2026 } from './_data/holidays-data';
+import { holidays2026 } from './_data/holidays-data.js';
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   const { title, start, end, description } = req.query;
