@@ -5,15 +5,7 @@
       "destination": "/api/$1"
     },
     {
-      "source": "/sitemap.xml",
-      "destination": "/sitemap.xml"
-    },
-    {
-      "source": "/robots.txt",
-      "destination": "/robots.txt"
-    },
-    {
-      "source": "/((?!api/|sitemap\\.xml|robots\\.txt|favicon\\.ico|.*\\.(?:png|jpg|svg|js|css)).*)",
+      "source": "/((?!api/|.*\\.).*)",
       "destination": "/index.html"
     }
   ]
