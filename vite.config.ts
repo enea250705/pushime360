@@ -20,6 +20,18 @@ export default defineConfig(({ mode }) => ({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'masked-icon.svg'],
+      workbox: {
+        navigateFallbackDenylist: [/^\/api/],
+        runtimeCaching: [
+          {
+            urlPattern: /^\/api/,
+            handler: 'NetworkOnly',
+            options: {
+              cacheName: 'api-cache',
+            },
+          },
+        ]
+      },
       manifest: {
         name: 'Pushime360 — Festat Zyrtare Shqiptare',
         short_name: 'Pushime360',
