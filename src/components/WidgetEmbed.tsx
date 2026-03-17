@@ -6,9 +6,7 @@ const WidgetEmbed = () => {
   const [copied, setCopied] = useState<string | null>(null);
   const [apiResults, setApiResults] = useState<Record<string, { loading: boolean; data: any; error: string | null }>>({});
 
-  const baseUrl = typeof window !== 'undefined' && window.location.hostname.includes('localhost')
-    ? 'https://pushime360.com'
-    : window.location.origin;
+  const baseUrl = 'https://pushime360.com';
 
   const embedCode = `<iframe
   src="${baseUrl}/?embed=true"
