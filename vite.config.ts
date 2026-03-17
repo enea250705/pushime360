@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'masked-icon.svg', 'sitemap.xml'],
+      includeAssets: ['favicon.svg', 'icon-192.png', 'icon-512.png', 'sitemap.xml'],
       workbox: {
         navigateFallbackDenylist: [/^\/api/, /sitemap\.xml$/, /robots\.txt$/],
         runtimeCaching: [
