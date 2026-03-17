@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Lightbulb, Calendar, ArrowRight, Sparkles, Download } from 'lucide-react';
 import { useHolidays, ALBANIAN_MONTHS, formatDateAlbanian, Holiday } from '@/data/holidays';
+import { useKosovoHolidays } from '@/data/kosovo-holidays';
+import { useCountry } from '@/hooks/use-country';
 
 interface LeaveOptimization {
   leaveDays: string[];
@@ -115,7 +117,10 @@ function generateOptimizations(holidaysData: Holiday[]): LeaveOptimization[] {
 }
 
 const SmartLeavePlanner = () => {
-  const { data: holidays = [] } = useHolidays();
+  const { country } = useCountry();
+  const alHolidays = useHolidays();
+  const ksHolidays = useKosovoHolidays();
+  const holidays = country === 'albania' ? alHolidays.data || [] : ksHolidays.data || [];
   const optimizations = useMemo(() => generateOptimizations(holidays), [holidays]);
 
   return (
@@ -163,7 +168,7 @@ const SmartLeavePlanner = () => {
                 
                 <div className="mt-4 flex shrink-0 md:mt-0 md:ml-4">
                   <a
-                    href={`/api/ical?title=${encodeURIComponent('Pushime të Gjata')}&start=${opt.leaveDays.length > 0 ? opt.leaveDays[0] : '2026-01-01'}&end=${opt.leaveDays.length > 0 ? opt.leaveDays[opt.leaveDays.length - 1] : '2026-01-01'}&description=${encodeURIComponent(`Pushime të gjata duke përdorur festat: ${opt.holidays.join(', ')}`)}`}
+                    href={`/api/ical?title=${encodeURIComponent('Pushime të Gjata')}&start=${opt.leaveDays.length > 0 ? opt.leaveDays[0] : '2026-01-01'}&end=${opt.leaveDays.length > 0 ? opt.leaveDays[opt.leaveDays.length - 1] : '2026-01-01'}&description=${encodeURIComponent(`Pushime të gjata duke përdorur festat: ${opt.holidays.join(', ')}`)}${country === 'kosovo' ? '&country=kosovo' : ''}`}
                     download="pushime-te-gjata.ics"
                     className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
                   >

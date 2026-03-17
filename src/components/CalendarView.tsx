@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, LayoutGrid, List, Download, Code } from 'lucide-react';
 import { ALBANIAN_MONTHS, ALBANIAN_DAYS, useHolidays, getCategoryColor } from '@/data/holidays';
+import { useKosovoHolidays } from '@/data/kosovo-holidays';
+import { useCountry } from '@/hooks/use-country';
 import HolidayModal from './HolidayModal';
 import type { Holiday } from '@/data/holidays';
 
@@ -13,7 +15,10 @@ const CalendarView = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [selectedHoliday, setSelectedHoliday] = useState<Holiday | null>(null);
 
-  const { data: holidays = [] } = useHolidays();
+  const { country } = useCountry();
+  const alHolidays = useHolidays();
+  const ksHolidays = useKosovoHolidays();
+  const holidays = country === 'albania' ? alHolidays.data || [] : ksHolidays.data || [];
 
   const year = 2026;
 
@@ -276,8 +281,8 @@ const CalendarView = () => {
         {/* Global Export Options */}
         <div className="mx-auto mt-6 flex max-w-4xl flex-col items-center justify-center gap-4 sm:flex-row">
           <a
-            href="/api/ical"
-            download="festat-shqiptare-2026.ics"
+            href={country === 'albania' ? "/api/ical" : "/api/ical?country=kosovo"}
+            download={country === 'albania' ? "festat-shqiptare-2026.ics" : "festat-e-kosoves-2026.ics"}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md sm:w-auto"
           >
             <Download className="h-4 w-4" />

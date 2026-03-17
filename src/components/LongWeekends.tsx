@@ -1,9 +1,16 @@
 import { motion } from 'framer-motion';
 import { Palmtree, Calendar, Briefcase } from 'lucide-react';
-import { calculateLongWeekends, formatDateAlbanian } from '@/data/holidays';
+import { calculateLongWeekends, formatDateAlbanian, useHolidays } from '@/data/holidays';
+import { useKosovoHolidays } from '@/data/kosovo-holidays';
+import { useCountry } from '@/hooks/use-country';
 
 const LongWeekends = () => {
-  const longWeekends = calculateLongWeekends();
+  const { country } = useCountry();
+  const alHolidays = useHolidays();
+  const ksHolidays = useKosovoHolidays();
+  
+  const holidays = country === 'albania' ? alHolidays.data || [] : ksHolidays.data || [];
+  const longWeekends = calculateLongWeekends(holidays);
 
   return (
     <section id="long-weekends" className="py-16 md:py-24">

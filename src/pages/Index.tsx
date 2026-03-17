@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import StatsBar from '@/components/StatsBar';
@@ -9,24 +10,30 @@ import PersonalLeavePlanner from '@/components/PersonalLeavePlanner';
 import KosovoComparison from '@/components/KosovoComparison';
 import WidgetEmbed from '@/components/WidgetEmbed';
 import Footer from '@/components/Footer';
+import { CountryProvider } from '@/hooks/use-country';
 
-const Index = () => {
+const Index = ({ country = 'albania' }: { country?: 'albania' | 'kosovo' }) => {
+  const [searchParams] = useSearchParams();
+  const isEmbed = searchParams.get('embed') === 'true';
+
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <CountryProvider initialCountry={country}>
+      <div className="min-h-screen bg-background">
+      {!isEmbed && <Header />}
       <main>
-        <HeroSection />
-        <StatsBar />
+        {!isEmbed && <HeroSection />}
+        {!isEmbed && <StatsBar />}
         <CalendarView />
-        <HolidayList />
-        <LongWeekends />
-        <SmartLeavePlanner />
-        <PersonalLeavePlanner />
-        <KosovoComparison />
-        <WidgetEmbed />
+        {!isEmbed && <HolidayList />}
+        {!isEmbed && <LongWeekends />}
+        {!isEmbed && <SmartLeavePlanner />}
+        {!isEmbed && <PersonalLeavePlanner />}
+        {!isEmbed && <KosovoComparison />}
+        {!isEmbed && <WidgetEmbed />}
       </main>
-      <Footer />
-    </div>
+      {!isEmbed && <Footer />}
+      </div>
+    </CountryProvider>
   );
 };
 

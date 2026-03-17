@@ -2,11 +2,18 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Briefcase, Plus, Trash2, Calendar, TrendingUp } from 'lucide-react';
 import { useHolidays, ALBANIAN_MONTHS, ALBANIAN_DAYS, getCategoryColor, formatDateAlbanian } from '@/data/holidays';
+import { useKosovoHolidays } from '@/data/kosovo-holidays';
+import { useCountry } from '@/hooks/use-country';
 
 const STORAGE_KEY = 'pushime360-leave-days';
 const QUOTA_KEY = 'pushime360-leave-quota';
 
 const PersonalLeavePlanner = () => {
+  const { country } = useCountry();
+  const alHolidays = useHolidays();
+  const ksHolidays = useKosovoHolidays();
+  const holidays = country === 'albania' ? alHolidays.data || [] : ksHolidays.data || [];
+  
   const [leaveDays, setLeaveDays] = useState<string[]>(() => {
     try {
       return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -18,8 +25,6 @@ const PersonalLeavePlanner = () => {
     } catch { return 20; }
   });
   const [selectedMonth, setSelectedMonth] = useState(0);
-
-  const { data: holidays = [] } = useHolidays();
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(leaveDays));

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Moon, Sun, Menu, X } from 'lucide-react';
+import { Moon, Sun, Menu, X, ChevronDown } from 'lucide-react';
+import { useCountry } from '@/hooks/use-country';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const navLinks = [
   { href: '#calendar', label: 'Kalendari' },
@@ -8,13 +10,15 @@ const navLinks = [
   { href: '#long-weekends', label: 'Fundjavat e Gjata' },
   { href: '#smart-planner', label: 'Sugjerime' },
   { href: '#planner', label: 'Plani Im' },
-  { href: '#kosovo', label: 'Kosova' },
   { href: '#api', label: 'API' },
 ];
 
 const Header = () => {
+  const { country } = useCountry();
+  const navigate = useNavigate();
   const [isDark, setIsDark] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [countryOpen, setCountryOpen] = useState(false);
 
   const toggleDark = () => {
     setIsDark(!isDark);
@@ -41,9 +45,38 @@ const Header = () => {
           </svg>
           <span className="hidden font-display text-base font-bold text-foreground sm:inline">
             Pushime<span className="text-primary">360</span>
-            <span className="ml-1 text-xs font-normal text-muted-foreground">— Kalendari i Festave</span>
+            <span className="ml-1 text-xs font-normal text-muted-foreground">— Kalendari {country === 'albania' ? 'Shqiptar' : 'i Kosovës'}</span>
           </span>
         </a>
+
+        <div className="flex items-center gap-4">
+          <div className="relative group">
+            <button 
+              onClick={() => setCountryOpen(!countryOpen)}
+              className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-semibold hover:bg-muted"
+            >
+              {country === 'albania' ? '🇦🇱 Shqipëria' : '🇽🇰 Kosova'}
+              <ChevronDown className={`h-3 w-3 transition-transform ${countryOpen ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {countryOpen && (
+              <div className="absolute right-0 top-full mt-1.5 w-32 origin-top-right rounded-xl border border-border bg-card p-1 shadow-xl ring-1 ring-black/5">
+                <button
+                  onClick={() => { navigate('/'); setCountryOpen(false); }}
+                  className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors hover:bg-muted ${country === 'albania' ? 'text-primary' : 'text-foreground'}`}
+                >
+                  🇦🇱 Shqipëria
+                </button>
+                <button
+                  onClick={() => { navigate('/kosove'); setCountryOpen(false); }}
+                  className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors hover:bg-muted ${country === 'kosovo' ? 'text-primary' : 'text-foreground'}`}
+                >
+                  🇽🇰 Kosova
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
 
         <nav className="hidden items-center gap-4 lg:flex">
           {navLinks.map(link => (

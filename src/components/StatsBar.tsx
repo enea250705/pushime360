@@ -1,8 +1,13 @@
 import { useHolidays, getCategoryColor, getCategoryLabel } from '@/data/holidays';
+import { useKosovoHolidays } from '@/data/kosovo-holidays';
+import { useCountry } from '@/hooks/use-country';
 import type { HolidayCategory, Holiday } from '@/data/holidays';
 
 const StatsBar = () => {
-  const { data: holidays = [] } = useHolidays();
+  const { country } = useCountry();
+  const alHolidays = useHolidays();
+  const ksHolidays = useKosovoHolidays();
+  const holidays = country === 'albania' ? alHolidays.data || [] : ksHolidays.data || [];
 
   const categoryCounts: Record<HolidayCategory, number> = {
     national: holidays.filter((h: Holiday) => h.category === 'national').length,

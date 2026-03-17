@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useHolidays, getCategoryLabel, getCategoryColor, getCategoryTextColor, formatDateAlbanian } from '@/data/holidays';
+import { useKosovoHolidays } from '@/data/kosovo-holidays';
+import { useCountry } from '@/hooks/use-country';
 import HolidayModal from './HolidayModal';
 import type { Holiday, HolidayCategory } from '@/data/holidays';
 
@@ -13,9 +15,13 @@ const categories: { key: HolidayCategory | 'all'; label: string }[] = [
 ];
 
 const HolidayList = () => {
+  const { country } = useCountry();
   const [filter, setFilter] = useState<HolidayCategory | 'all'>('all');
   const [selectedHoliday, setSelectedHoliday] = useState<Holiday | null>(null);
-  const { data: holidays = [] } = useHolidays();
+  
+  const alHolidays = useHolidays();
+  const ksHolidays = useKosovoHolidays();
+  const holidays = country === 'albania' ? alHolidays.data || [] : ksHolidays.data || [];
 
   const filtered = filter === 'all' 
     ? holidays 
@@ -29,7 +35,7 @@ const HolidayList = () => {
             Festat Zyrtare 2026
           </h2>
           <p className="text-muted-foreground">
-            Lista e plotë e festave zyrtare në Shqipëri
+            Lista e plotë e festave zyrtare në {country === 'albania' ? 'Shqipëri' : 'Kosovë'}
           </p>
         </div>
 

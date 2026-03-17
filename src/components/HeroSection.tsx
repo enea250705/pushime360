@@ -1,9 +1,18 @@
 import { motion } from 'framer-motion';
-import { Calendar, ArrowDown } from 'lucide-react';
+import { Calendar, ArrowDown, Flag } from 'lucide-react';
 import { getNextHoliday, getDaysUntil, formatDateAlbanian, useHolidays } from '@/data/holidays';
+import { useKosovoHolidays } from '@/data/kosovo-holidays';
+import { useCountry } from '@/hooks/use-country';
+import { useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
-  const { data: holidays = [], isLoading } = useHolidays();
+  const { country } = useCountry();
+  const navigate = useNavigate();
+  
+  const alHolidays = useHolidays();
+  const ksHolidays = useKosovoHolidays();
+  
+  const holidays = country === 'albania' ? alHolidays.data || [] : ksHolidays.data || [];
   const nextHoliday = getNextHoliday(holidays);
   const daysUntil = nextHoliday ? getDaysUntil(nextHoliday.date) : 0;
   
@@ -14,10 +23,10 @@ const HeroSection = () => {
   const remainingHolidays = holidays.filter(h => {
     const holidayDate = new Date(h.date);
     holidayDate.setHours(0, 0, 0, 0);
-    return !h.isShifted && holidayDate >= today;
+    return !('isObservance' in h && h.isObservance) && !('isShifted' in h && h.isShifted) && holidayDate >= today;
   }).length;
   
-  const totalHolidays = holidays.filter(h => !h.isShifted).length;
+  const totalHolidays = holidays.filter(h => !('isObservance' in h && h.isObservance) && !('isShifted' in h && h.isShifted)).length;
 
   return (
     <section className="relative overflow-hidden bg-secondary py-20 md:py-32">
@@ -41,8 +50,25 @@ const HeroSection = () => {
 
           <h1 className="mb-6 font-display text-4xl font-bold leading-tight text-secondary-foreground md:text-6xl">
             Kalendari i Festave{' '}
-            <span className="text-gradient-primary">Shqiptare</span>
+            <span className="text-gradient-primary">
+              {country === 'albania' ? 'Shqiptare' : 'të Kosovës'}
+            </span>
           </h1>
+
+          <div className="mb-8 flex flex-wrap items-center justify-center gap-4">
+            <button
+              onClick={() => navigate('/')}
+              className={`flex items-center gap-2 rounded-xl border border-primary/20 bg-card px-6 py-3 text-sm font-semibold transition-all hover:scale-105 ${country === 'albania' ? 'ring-2 ring-primary bg-primary/10' : ''}`}
+            >
+              🇦🇱 Shqipëria
+            </button>
+            <button
+              onClick={() => navigate('/kosove')}
+              className={`flex items-center gap-2 rounded-xl border border-primary/20 bg-card px-6 py-3 text-sm font-semibold transition-all hover:scale-105 ${country === 'kosovo' ? 'ring-2 ring-primary bg-primary/10' : ''}`}
+            >
+              🇽🇰 Kosova
+            </button>
+          </div>
 
           <p className="mb-10 text-lg text-secondary-foreground/70 md:text-xl">
             Edhe <strong>{remainingHolidays}</strong> festa zyrtare të mbetura këtë vit · {totalHolidays} gjithsej

@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Code2, Copy, Check, BookOpen, Globe, Play, Loader2, CheckCircle2 } from 'lucide-react';
+import { useCountry } from '@/hooks/use-country';
 
 const WidgetEmbed = () => {
+  const { country } = useCountry();
   const [copied, setCopied] = useState<string | null>(null);
   const [apiResults, setApiResults] = useState<Record<string, { loading: boolean; data: any; error: string | null }>>({});
 
-  const baseUrl = typeof window !== 'undefined' && window.location.hostname.includes('localhost')
-    ? 'https://pushime360.com'
-    : window.location.origin;
+  const baseUrl = 'https://pushime360.com';
 
   const embedCode = `<iframe
-  src="${baseUrl}/?embed=true"
+  src="${baseUrl}${country === 'kosovo' ? '/kosove' : '/'}?embed=true"
   width="100%"
   height="500"
   frameborder="0"
@@ -19,7 +19,7 @@ const WidgetEmbed = () => {
 ></iframe>`;
 
   const icalExample = `// Shto në iCal direkt nga aplikacioni juaj HTML
-<a href="${baseUrl}/api/ical">
+<a href="${baseUrl}/api/ical${country === 'kosovo' ? '?country=kosovo' : ''}">
   Shto në Kalendarin Tim (iCal)
 </a>
 
@@ -94,7 +94,7 @@ const WidgetEmbed = () => {
             Widget & API
           </h2>
           <p className="text-muted-foreground">
-            Integro festat shqiptare në projektet e tua
+            Integro festat {country === 'albania' ? 'shqiptare' : 'të Kosovës'} në projektet e tua
           </p>
         </div>
 
