@@ -46,19 +46,23 @@ const WidgetEmbed = () => {
     }
   };
 
+  // For display and curl examples we always show the canonical domain
+  // For the actual fetch we use a relative path to avoid CORS from localhost
   const apiEndpoints = [
     {
       key: 'holidays',
       label: 'GET /api/holidays',
       description: 'Festat zyrtare të Shqipërisë 2026',
-      url: `${baseUrl}/api/holidays`,
+      fetchUrl: '/api/holidays',
+      displayUrl: `${baseUrl}/api/holidays`,
       curlExample: `curl ${baseUrl}/api/holidays`,
     },
     {
       key: 'kosovo',
       label: 'GET /api/kosovo-holidays',
       description: 'Festat zyrtare të Kosovës 2026',
-      url: `${baseUrl}/api/kosovo-holidays`,
+      fetchUrl: '/api/kosovo-holidays',
+      displayUrl: `${baseUrl}/api/kosovo-holidays`,
       curlExample: `curl ${baseUrl}/api/kosovo-holidays`,
     },
   ];
@@ -142,7 +146,7 @@ const WidgetEmbed = () => {
                           {copied === ep.key + '-copy' ? <><Check className="h-3.5 w-3.5" /> Kopjuar!</> : <><Copy className="h-3.5 w-3.5" /> Kopjo URL</>}
                         </button>
                         <button
-                          onClick={() => testEndpoint(ep.key, ep.url)}
+                          onClick={() => testEndpoint(ep.key, ep.fetchUrl)}
                           disabled={isLoading}
                           className="flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
                         >
